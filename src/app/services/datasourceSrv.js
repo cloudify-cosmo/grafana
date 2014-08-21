@@ -6,6 +6,7 @@ define([
   './influxdb/influxdbDatasource',
   './opentsdb/opentsdbDatasource',
   './elasticsearch/es-datasource',
+  './cloudify/cloudifyDatasource',
 ],
 function (angular, _, config) {
   'use strict';
@@ -67,6 +68,9 @@ function (angular, _, config) {
       case 'elasticsearch':
         Datasource = $injector.get('ElasticDatasource');
         break;
+      case 'cloudify':
+          Datasource = $injector.get('CloudifyDatasource');
+          break;
       }
       return new Datasource(ds);
     };

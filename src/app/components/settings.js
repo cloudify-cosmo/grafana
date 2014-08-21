@@ -72,6 +72,7 @@ function (_, crypto) {
       datasource.name = key;
       parseBasicAuth(datasource);
       if (datasource.type === 'influxdb') { parseMultipleHosts(datasource); }
+      if (datasource.type === 'cloudify') { parseMultipleHosts(datasource); }
     });
 
     if (settings.plugins.panels) {
