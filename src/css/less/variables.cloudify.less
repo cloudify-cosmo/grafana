@@ -55,7 +55,7 @@
 
 // Scaffolding
 // -------------------------
-@bodyBackground:        @grayLighter;
+@bodyBackground:        @white;
 @textColor:             #555;
 
 
@@ -70,9 +70,10 @@
 @sansFontFamily:        "Helvetica Neue", Helvetica, Arial, sans-serif;
 @serifFontFamily:       Georgia, "Times New Roman", Times, serif;
 @monoFontFamily:        Menlo, Monaco, Consolas, "Courier New", monospace;
+@openSans:              "OpenSansRegular", sans-serif;
 
 @baseFontSize:          14px;
-@baseFontFamily:        @sansFontFamily;
+@baseFontFamily:        @openSans;
 @baseLineHeight:        20px;
 @altFontFamily:         @serifFontFamily;
 
@@ -209,8 +210,8 @@
 @navbarBorder:                    darken(@navbarBackground, 6.5%);
 
 @navbarText:                      #666;
-@navbarLinkColor:                 #666;
-@navbarLinkColorHover:            #333;
+@navbarLinkColor:                 #54bbf1;
+@navbarLinkColorHover:            #4b6c8b;
 @navbarLinkColorActive:           #555;
 @navbarLinkBackgroundHover:       transparent;
 @navbarLinkBackgroundActive:      darken(@navbarBackground, 6.5%);
@@ -235,6 +236,7 @@
 @navbarInverseSearchPlaceholderColor:    @grayDark;
 
 @navbarInverseBrandColor:                @navbarInverseLinkColor;
+@navbarFontSize:                         15px;
 
 
 // Pagination
@@ -322,3 +324,8 @@
 // 768px-979px
 @fluidGridColumnWidth768:      percentage(@gridColumnWidth768/@gridRowWidth768);
 @fluidGridGutterWidth768:      percentage(@gridGutterWidth768/@gridRowWidth768);
+
+// Panel
+// -------------------------
+@panelTitleColor:         #5A82A2;
+@panelTitleFontSize:      24px;

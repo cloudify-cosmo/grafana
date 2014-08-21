@@ -79,13 +79,24 @@ a.text-success:hover { color: darken(@green, 10%); }
 		&:hover {
 			color: @navbarLinkColorHover;
 		}
+
+        img {
+          display: none;
+        }
 	}
+
+    .nav > li > a:hover,
+    .nav > .active > a:hover {
+        color: @navbarLinkColorHover;
+        border-bottom: 1px solid @navbarLinkColorHover;
+    }
 
 	.nav > .active > a,
 	.nav > .active > a:hover,
 	.nav > .active > a:focus {
 		.box-shadow(none);
 		background-color: @navbarLinkBackgroundHover;
+        font-size: @navbarFontSize;
 	}
 
 	.nav li.dropdown.open > .dropdown-toggle,
@@ -572,3 +583,42 @@ a.thumbnail {
 
 // MEDIA QUERIES
 // -----------------------------------------------------
+
+// CUSTOMIZE
+// -----------------------------------------------------
+
+.panel-title {
+  color: @panelTitleColor;
+  font-size: @panelTitleFontSize;
+}
+
+.panel-full-edit-tabs {
+  background-color: @white !important;
+}
+
+.grafana-target {
+  margin-bottom: -1px;
+  border-bottom: 1px solid @grafanaTargetBorder;
+}
+
+div.panel-extra-container {
+  margin-top: 11px !important;
+}
+
+.btn-info {
+  background-color: #4b6c8b;
+  border-radius: 3px !important;
+  &.dropdown-toggle {
+    background-color: #4b6c8b !important;
+  }
+}
+
+.btn-success,
+.btn-success:hover,
+.btn-success:focus {
+  background-color: #29a9ed;
+  border-radius: 3px !important;
+  &.dropdown-toggle {
+    background-color: #29a9ed !important;
+  }
+}
