@@ -8,6 +8,7 @@ module.exports = function(grunt) {
     'less:src',
     'concat:cssDark',
     'concat:cssLight',
+    'concat:cssCloudify',
     'copy:everything_but_less_to_temp',
     'htmlmin:build',
     'ngtemplates',

@@ -200,7 +200,7 @@ function (angular, _, kbn, CloudifySeries) {
 
     CloudifyDatasource.prototype._restQuery = function(path) {
       return this._influxRequest('GET', path, {
-          time_precision: 's',
+        time_precision: 's',
       });
     };
 

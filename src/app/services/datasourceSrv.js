@@ -69,8 +69,8 @@ function (angular, _, config) {
         Datasource = $injector.get('ElasticDatasource');
         break;
       case 'cloudify':
-          Datasource = $injector.get('CloudifyDatasource');
-          break;
+        Datasource = $injector.get('CloudifyDatasource');
+        break;
       }
       return new Datasource(ds);
     };

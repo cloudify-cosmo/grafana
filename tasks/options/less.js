@@ -18,6 +18,7 @@ module.exports = function(config) {
       files: {
         "<%= srcDir %>/css/bootstrap.dark.min.css": "<%= srcDir %>/css/less/bootstrap.dark.less",
         "<%= srcDir %>/css/bootstrap.light.min.css": "<%= srcDir %>/css/less/bootstrap.light.less",
+        "<%= srcDir %>/css/bootstrap.cloudify.min.css": "<%= srcDir %>/css/less/bootstrap.cloudify.less",
         "<%= srcDir %>/css/bootstrap-responsive.min.css": "<%= srcDir %>/css/less/grafana-responsive.less"
       }
     }

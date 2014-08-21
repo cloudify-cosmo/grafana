@@ -13,6 +13,10 @@ module.exports = function(config) {
       src: '<%= destDir %>/css/grafana.light.min.css',
       dest: '<%= destDir %>/css'
     },
+    cssCloudify: {
+      src: '<%= destDir %>/css/grafana.cloudify.min.css',
+      dest: '<%= destDir %>/css'
+    },
     js: {
       src: '<%= destDir %>/app/app.js',
       dest: '<%= destDir %>/app'

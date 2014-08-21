@@ -24,6 +24,18 @@ module.exports = function(config) {
       ],
       dest: '<%= srcDir %>/css/grafana.light.min.css'
     },
+    cssCloudify: {
+      src: [
+          '<%= srcDir %>/vendor/css/normalize.min.css',
+          '<%= srcDir %>/vendor/css/timepicker.css',
+          '<%= srcDir %>/vendor/css/spectrum.css',
+          '<%= srcDir %>/vendor/css/animate.min.css',
+          '<%= srcDir %>/css/bootstrap.cloudify.min.css',
+          '<%= srcDir %>/css/bootstrap-responsive.min.css',
+          '<%= srcDir %>/vendor/css/font-awesome.min.css'
+      ],
+      dest: '<%= srcDir %>/css/grafana.cloudify.min.css'
+    },
 
     js: {
       src: [
