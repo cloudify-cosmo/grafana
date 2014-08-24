@@ -1,4 +1,33 @@
-# 1.7.0 (unreleased)
+# 1.8.0 (unreleased)
+
+**New features and improvements**
+
+- [Issue #578](https://github.com/grafana/grafana/issues/578). Dashboard: Row option to display row title even when the row is visible
+- [Issue #672](https://github.com/grafana/grafana/issues/672). Dashboard: panel fullscreen & edit state is present in url, can now link to graph in edit & fullscreen mode.
+- [Issue #709](https://github.com/grafana/grafana/issues/709). Dashboard: Small UI look polish to search results, made dashboard title link are larger
+- [Issue #425](https://github.com/grafana/grafana/issues/425). Graph: New section in 'Display Styles' tab to override any display setting on per series bases (mix and match lines, bars, points, fill, stack, line width etc)
+- [Issue #634](https://github.com/grafana/grafana/issues/634). Dashboard: Dashboard tags now in different colors (from fixed palette) determined by tag name.
+
+**Fixes**
+- [Issue #696](https://github.com/grafana/grafana/issues/696). Graph: Fix for y-axis format 'none' when values are in scientific notation (ex 2.3e-13)
+- [Issue #697](https://github.com/grafana/grafana/issues/697). Graphite: Fix for Glob syntax in graphite queries ([1-9] and ?) that made the query editor / parser bail and fallback to a text box.
+- [Issue #277](https://github.com/grafana/grafana/issues/277). Dashboard: Fix for timepicker date & tooltip when UTC timezone selected.
+- [Issue #699](https://github.com/grafana/grafana/issues/699). Dashboard: Fix for bug when adding rows from dashboard settings dialog.
+
+**Tech**
+- Upgraded from angularjs 1.1.5 to 1.3 beta 17;
+- Switch from underscore to lodash
+- helpers to easily unit test angularjs controllers and services
+- Test coverage through coveralls
+- Upgrade from jquery 1.8.0 to 2.1.1 (**Removes support for IE7 & IE8**)
+
+# 1.7.1 (unreleased)
+
+**Fixes**
+- [Issue #691](https://github.com/grafana/grafana/issues/691). Dashboard: tooltip fixes, sometimes they would not show, and sometimes they would get stuck.
+- [Issue #695](https://github.com/grafana/grafana/issues/695). Dashboard: Tooltip on goto home menu icon would get stuck after clicking on it
+
+# 1.7.0 (2014-08-11)
 
 **Fixes**
 - [Issue #652](https://github.com/grafana/grafana/issues/652). Timepicker: Entering custom date range impossible when refresh is low (now is constantly reset)
@@ -7,6 +36,9 @@
 - [Issue #657](https://github.com/grafana/grafana/issues/657). General: Fix for refresh icon in IE browsers
 - [Issue #661](https://github.com/grafana/grafana/issues/661). Annotations: Elasticsearch querystring with filter template replacements was not interpolated
 - [Issue #660](https://github.com/grafana/grafana/issues/660). OpenTSDB: fix opentsdb queries that returned more than one series
+
+**Change**
+- [Issue #681](https://github.com/grafana/grafana/issues/681). Dashboard: The panel error bar has been replaced with a small error indicator, this indicator does not change panel height and is a lot less intrusive. Hover over it for short details, click on it for more details.
 
 # 1.7.0-rc1 (2014-08-05)
 

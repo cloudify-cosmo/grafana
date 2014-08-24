@@ -132,8 +132,8 @@ function (angular, _, kbn, InfluxSeries) {
         return new InfluxSeries({ seriesList: results, annotation: annotation }).getAnnotations();
       });
     };
-
     InfluxDatasource.prototype.listColumns = function(seriesName) {
+
       return this._seriesQuery('select * from /' + seriesName + '/ limit 1').then(function(data) {
         if (!data) {
           return [];
@@ -184,6 +184,7 @@ function (angular, _, kbn, InfluxSeries) {
     function retry(deferred, callback, delay) {
       return callback().then(undefined, function(reason) {
         if (reason.status !== 0 || reason.status >= 300) {
+          reason.message = 'InfluxDB Error: <br/>' + reason.data;
           deferred.reject(reason);
         }
         else {
@@ -357,6 +358,7 @@ function (angular, _, kbn, InfluxSeries) {
         for (var i = 0; i < results.length; i++) {
           var hit =  {
             id: results[i].points[0][dashCol],
+            title: results[i].points[0][dashCol],
             tags: results[i].points[0][tagsCol].split(",")
           };
           hit.tags = hit.tags[0] ? hit.tags : [];

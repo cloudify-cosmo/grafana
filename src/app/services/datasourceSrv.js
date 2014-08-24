@@ -71,6 +71,8 @@ function (angular, _, config) {
       case 'cloudify':
         Datasource = $injector.get('CloudifyDatasource');
         break;
+      default:
+        Datasource = $injector.get(ds.type);
       }
       return new Datasource(ds);
     };
