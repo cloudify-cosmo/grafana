@@ -213,10 +213,10 @@ function (angular, _, kbn, CloudifySeries) {
         var currentUrl = _this.urls.shift();
         _this.urls.push(currentUrl);
 
-        var params = $routeParams || {};
+        var params = {};
 
         if (method === 'GET') {
-          _.extend(params, data);
+          _.extend(params, $routeParams, data);
           data = null;
         }
 
