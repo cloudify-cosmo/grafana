@@ -181,6 +181,7 @@ function (angular, _, kbn, CloudifySeries) {
     function retry(deferred, callback, delay) {
       return callback().then(undefined, function(reason) {
         if (reason.status !== 0 || reason.status >= 300) {
+          reason.message = 'InfluxDB Error: <br/>' + reason.data;
           deferred.reject(reason);
         }
         else {
@@ -223,7 +224,8 @@ function (angular, _, kbn, CloudifySeries) {
           method: method,
           url:    currentUrl + url,
           params: params,
-          data:   data
+          data:   data,
+          inspect: { type: 'influxdb' },
         };
 
         return $http(options).success(function (data) {
@@ -356,6 +358,7 @@ function (angular, _, kbn, CloudifySeries) {
         for (var i = 0; i < results.length; i++) {
           var hit =  {
             id: results[i].points[0][dashCol],
+            title: results[i].points[0][dashCol],
             tags: results[i].points[0][tagsCol].split(",")
           };
           hit.tags = hit.tags[0] ? hit.tags : [];
