@@ -2,14 +2,22 @@ define([
   'angular',
   'lodash',
   'kbn',
+  'store',
   './cloudifySeries'
 ],
-function (angular, _, kbn, CloudifySeries) {
+function (angular, _, kbn, store, CloudifySeries) {
   'use strict';
 
   var module = angular.module('grafana.services');
 
   module.factory('CloudifyDatasource', function($q, $http, $routeParams) {
+
+    var dashboardId = 'grafana-default';
+    if($routeParams.hasOwnProperty('id')) {
+        dashboardId = 'grafana-' + $routeParams.id;
+    }
+
+
     function CloudifyDatasource(datasource) {
       this.type = 'Cloudify';
       this.editorSrc = 'app/partials/cloudify/editor.html';
@@ -237,27 +245,52 @@ function (angular, _, kbn, CloudifySeries) {
     };
 
     CloudifyDatasource.prototype.saveDashboard = function(dashboard) {
+
+        //console.log(['saveDashboard', dashboard]);
+
       var tags = dashboard.tags.join(',');
       var title = dashboard.title;
       var temp = dashboard.temp;
       if (temp) { delete dashboard.temp; }
 
-      var data = [{
-        name: 'grafana.dashboard_' + btoa(title),
-        columns: ['time', 'sequence_number', 'title', 'tags', 'dashboard'],
-        points: [[1000000000000, 1, title, tags, angular.toJson(dashboard)]]
-      }];
 
-      if (temp) {
-        return this._saveDashboardTemp(data, title);
+      function isDashboardExist(dashboards, dashboard) {
+          for(var i in dashboards) {
+              var dashboard = dashboards[i];
+              if(dashboard.hasOwnProperty('title')) {
+                  if(dashboard.title === dashboard.title) {
+                      return true;
+                  }
+              }
+          }
+          return false;
       }
-      else {
-        return this._influxRequest('POST', '/series', data).then(function() {
-          return { title: title, url: '/dashboard/db/' + title };
-        }, function(err) {
-          throw 'Failed to save dashboard to InfluxDB: ' + err.data;
-        });
-      }
+
+//
+//      var data = [{
+//        name: 'grafana.dashboard_' + btoa(title),
+//        columns: ['time', 'sequence_number', 'title', 'tags', 'dashboard'],
+//        points: [[1000000000000, 1, title, tags, angular.toJson(dashboard)]]
+//      }];
+
+
+        var dashboards = angular.fromJson(store.get(dashboardId)) || [];
+
+        if(!isDashboardExist(dashboards, dashboard)) {
+            dashboards.push(dashboard);
+            store.set(dashboardId, angular.toJson(dashboards));
+        }
+
+//      if (temp) {
+//        return this._saveDashboardTemp(data, title);
+//      }
+//      else {
+//        return this._influxRequest('POST', '/series', data).then(function() {
+//          return { title: title, url: '/dashboard/db/' + title };
+//        }, function(err) {
+//          throw 'Failed to save dashboard to InfluxDB: ' + err.data;
+//        });
+//      }
     };
 
     CloudifyDatasource.prototype._saveDashboardTemp = function(data, title) {
