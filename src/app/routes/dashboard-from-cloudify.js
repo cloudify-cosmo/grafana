@@ -51,7 +51,7 @@ function (angular, $, config, _, store) {
     var findDashboardById = function(dashboards, id) {
       for(var i in dashboards) {
         var dashboard = dashboards[i];
-        if(dashboard.hasOwnProperty('id') && dashboard.id === parseInt(id)) {
+        if(dashboard.hasOwnProperty('id') && dashboard.id === id) {
           return i;
         }
       }
