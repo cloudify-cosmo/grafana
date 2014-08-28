@@ -42,7 +42,7 @@ function (angular, _, config, $) {
         var selectedDash = $scope.results.dashboards[$scope.selectedIndex];
         if (selectedDash) {
           $location.search({});
-          $location.path("/dashboard/db/" + selectedDash.id);
+          $location.path(datasourceSrv.default.dashboardUrl + '/' + selectedDash.id);
           setTimeout(function() {
             $('body').click(); // hack to force dropdown to close;
           });
@@ -51,7 +51,7 @@ function (angular, _, config, $) {
     };
 
     $scope.goToDashboard = function(id) {
-      $location.path("/dashboard/db/" + id);
+      $location.path(datasourceSrv.default.dashboardUrl + '/' + id);
     };
 
     $scope.shareDashboard = function(title, id, $event) {
@@ -60,7 +60,7 @@ function (angular, _, config, $) {
 
       $scope.share = {
         title: title,
-        url: baseUrl + '#dashboard/db/' + encodeURIComponent(id)
+        url: baseUrl + '#/' + datasourceSrv.default.dashboardUrl + '/' + encodeURIComponent(id)
       };
     };
 

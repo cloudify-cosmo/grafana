@@ -16,13 +16,23 @@ function (angular, $, config, _, store) {
         templateUrl: 'app/partials/dashboard.html',
         controller : 'DashFromCloudifyProvider',
         reloadOnSearch: false
+      })
+      .when('/dashboard/cloudify/:dashboardId/:subdashId', {
+        templateUrl: 'app/partials/dashboard.html',
+        controller : 'DashFromCloudifyProvider',
+        reloadOnSearch: false
       });
   });
 
   module.controller('DashFromCloudifyProvider', function ($scope, $http, $routeParams, alertSrv) {
     var dashboardId = 'grafana-default';
+    var subdashId = false;
     if ($routeParams.hasOwnProperty('dashboardId')) {
       dashboardId = 'grafana-' + $routeParams.dashboardId;
+    }
+
+    if ($routeParams.hasOwnProperty('subdashId')) {
+      subdashId = $routeParams.subdashId;
     }
 
     var dashboardLoad = function () {
@@ -38,14 +48,28 @@ function (angular, $, config, _, store) {
       });
     };
 
+    var findDashboardById = function(dashboards, id) {
+      for(var i in dashboards) {
+        var dashboard = dashboards[i];
+        if(dashboard.hasOwnProperty('id') && dashboard.id === parseInt(id)) {
+          return i;
+        }
+      }
+      return 0;
+    };
+
     var result = angular.fromJson(store.get(dashboardId)) || false;
 
     if (!result) {
       dashboardLoad();
     }
     else {
+      var loadDashboardNum = 0;
+      if(subdashId) {
+        loadDashboardNum = findDashboardById(result, subdashId);
+      }
       $scope.$evalAsync(function () {
-        $scope.emitAppEvent('setup-dashboard', result[0]);
+        $scope.emitAppEvent('setup-dashboard', result[loadDashboardNum]);
       });
     }
   });

@@ -25,6 +25,7 @@ function (angular, _, kbn, store, CloudifySeries) {
       this.templateSettings = {
         interpolate : /\[\[([\s\S]+?)\]\]/g,
       };
+      this.dashboardUrl = 'dashboard/cloudify/' + $routeParams.dashboardId;
 
       this.saveTemp = _.isUndefined(datasource.save_temp) ? true : datasource.save_temp;
       this.saveTempTTL = _.isUndefined(datasource.save_temp_ttl) ? '30d' : datasource.save_temp_ttl;
@@ -34,6 +35,10 @@ function (angular, _, kbn, store, CloudifySeries) {
       this.supportMetrics = true;
       this.annotationEditorSrc = 'app/partials/cloudify/annotation_editor.html';
     }
+
+    CloudifyDatasource.prototype.getDashboardUrl = function() {
+      return this.dashboardUrl;
+    };
 
     CloudifyDatasource.prototype.query = function(filterSrv, options) {
       var promises = _.map(options.targets, function(target) {
@@ -244,30 +249,28 @@ function (angular, _, kbn, store, CloudifySeries) {
     };
 
     CloudifyDatasource.prototype.saveDashboard = function(dashboard) {
+      var deferred = $q.defer();
+      var title = dashboard.title;
       var temp = dashboard.temp;
       if (temp) { delete dashboard.temp; }
       var dashboards = angular.fromJson(store.get(dashboardId)) || [];
 
-      function isDashboardExist(dashboards, newDashboard) {
-        for(var i in dashboards) {
-          var dashboard = dashboards[i];
-          if(dashboard.hasOwnProperty('title')) {
-            if(dashboard.title === newDashboard.title) {
-              return true;
-            }
-          }
+      function getUniqueId() {
+        var sGuid="";
+        for (var i=0; i<32; i++) {
+          sGuid+=Math.floor(Math.random()*0xF).toString(0xF);
         }
-        return false;
+        return sGuid;
       }
 
-      if(!isDashboardExist(dashboards, dashboard)) {
+      try {
+        dashboard.id = getUniqueId();
         dashboards.push(dashboard);
-        try {
-          store.set(dashboardId, angular.toJson(dashboards));
-        }
-        catch(err) {
-          throw 'Failed to save dashboard to LocalStorage: ' + err;
-        }
+        store.set(dashboardId, angular.toJson(dashboards));
+        deferred.resolve({ title: title, url: '/' + this.dashboardUrl + '/' + dashboard.id });
+        return deferred.promise;
+      } catch(err) {
+        throw 'Failed to save dashboard to LocalStorage: ' + err;
       }
     };
 
@@ -293,18 +296,28 @@ function (angular, _, kbn, store, CloudifySeries) {
     };
 
     CloudifyDatasource.prototype.deleteDashboard = function(id) {
-      return this._seriesQuery('drop series "grafana.dashboard_' + btoa(id) + '"').then(function(results) {
-        if (!results) {
-          throw "Could not delete dashboard";
+      var deferred = $q.defer();
+      var dashboards = angular.fromJson(store.get(dashboardId)) || [];
+      var title = id;
+
+      for(var i in dashboards) {
+        var dashboard = dashboards[i];
+        if(dashboard.id === id) {
+          title = dashboard.title;
+          dashboards.splice(i, 1);
         }
-        return id;
-      }, function(err) {
-        return "Could not delete dashboard, " + err.data;
-      });
+      }
+
+      try {
+        store.set(dashboardId, angular.toJson(dashboards));
+        deferred.resolve(title);
+        return deferred.promise;
+      } catch(err) {
+        throw 'Could not delete dashboard, ' + err;
+      }
     };
 
     CloudifyDatasource.prototype.searchDashboards = function(queryString) {
-
       function searchDashboardsByField(dashboards, field, string) {
         var returnDashboards = [];
         for(var i in dashboards) {
