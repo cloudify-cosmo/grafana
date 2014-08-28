@@ -13,10 +13,9 @@ function (angular, _, kbn, store, CloudifySeries) {
   module.factory('CloudifyDatasource', function($q, $http, $routeParams) {
 
     var dashboardId = 'grafana-default';
-    if($routeParams.hasOwnProperty('id')) {
-        dashboardId = 'grafana-' + $routeParams.id;
+    if($routeParams.hasOwnProperty('dashboardId')) {
+      dashboardId = 'grafana-' + $routeParams.dashboardId;
     }
-
 
     function CloudifyDatasource(datasource) {
       this.type = 'Cloudify';
@@ -245,86 +244,31 @@ function (angular, _, kbn, store, CloudifySeries) {
     };
 
     CloudifyDatasource.prototype.saveDashboard = function(dashboard) {
-
-        //console.log(['saveDashboard', dashboard]);
-
-      var tags = dashboard.tags.join(',');
-      var title = dashboard.title;
       var temp = dashboard.temp;
       if (temp) { delete dashboard.temp; }
+      var dashboards = angular.fromJson(store.get(dashboardId)) || [];
 
-
-      function isDashboardExist(dashboards, dashboard) {
-          for(var i in dashboards) {
-              var dashboard = dashboards[i];
-              if(dashboard.hasOwnProperty('title')) {
-                  if(dashboard.title === dashboard.title) {
-                      return true;
-                  }
-              }
+      function isDashboardExist(dashboards, newDashboard) {
+        for(var i in dashboards) {
+          var dashboard = dashboards[i];
+          if(dashboard.hasOwnProperty('title')) {
+            if(dashboard.title === newDashboard.title) {
+              return true;
+            }
           }
-          return false;
-      }
-
-//
-//      var data = [{
-//        name: 'grafana.dashboard_' + btoa(title),
-//        columns: ['time', 'sequence_number', 'title', 'tags', 'dashboard'],
-//        points: [[1000000000000, 1, title, tags, angular.toJson(dashboard)]]
-//      }];
-
-
-        var dashboards = angular.fromJson(store.get(dashboardId)) || [];
-
-        if(!isDashboardExist(dashboards, dashboard)) {
-            dashboards.push(dashboard);
-            store.set(dashboardId, angular.toJson(dashboards));
         }
-
-//      if (temp) {
-//        return this._saveDashboardTemp(data, title);
-//      }
-//      else {
-//        return this._influxRequest('POST', '/series', data).then(function() {
-//          return { title: title, url: '/dashboard/db/' + title };
-//        }, function(err) {
-//          throw 'Failed to save dashboard to InfluxDB: ' + err.data;
-//        });
-//      }
-    };
-
-    CloudifyDatasource.prototype._saveDashboardTemp = function(data, title) {
-      data[0].name = 'grafana.temp_dashboard_' + btoa(title);
-      data[0].columns.push('expires');
-      data[0].points[0].push(this._getTempDashboardExpiresDate());
-
-      return this._influxRequest('POST', '/series', data).then(function() {
-        var baseUrl = window.location.href.replace(window.location.hash,'');
-        var url = baseUrl + "#dashboard/temp/" + title;
-        return { title: title, url: url };
-      }, function(err) {
-        throw 'Failed to save shared dashboard to InfluxDB: ' + err.data;
-      });
-    };
-
-    CloudifyDatasource.prototype._getTempDashboardExpiresDate = function() {
-      var ttlLength = this.saveTempTTL.substring(0, this.saveTempTTL.length - 1);
-      var ttlTerm = this.saveTempTTL.substring(this.saveTempTTL.length - 1, this.saveTempTTL.length).toLowerCase();
-      var expires = Date.now();
-      switch(ttlTerm) {
-        case "m":
-          expires += ttlLength * 60000;
-          break;
-        case "d":
-          expires += ttlLength * 86400000;
-          break;
-        case "w":
-          expires += ttlLength * 604800000;
-          break;
-        default:
-          throw "Unknown ttl duration format";
+        return false;
       }
-      return expires;
+
+      if(!isDashboardExist(dashboards, dashboard)) {
+        dashboards.push(dashboard);
+        try {
+          store.set(dashboardId, angular.toJson(dashboards));
+        }
+        catch(err) {
+          throw 'Failed to save dashboard to LocalStorage: ' + err;
+        }
+      }
     };
 
     CloudifyDatasource.prototype.getDashboard = function(id, isTemp) {
@@ -360,45 +304,105 @@ function (angular, _, kbn, store, CloudifySeries) {
     };
 
     CloudifyDatasource.prototype.searchDashboards = function(queryString) {
-      var influxQuery = 'select title, tags from /grafana.dashboard_.*/ where ';
 
-      var tagsOnly = queryString.indexOf('tags!:') === 0;
-      if (tagsOnly) {
-        var tagsQuery = queryString.substring(6, queryString.length);
-        influxQuery = influxQuery + 'tags =~ /.*' + tagsQuery + '.*/i';
-      }
-      else {
-        var titleOnly = queryString.indexOf('title:') === 0;
-        if (titleOnly) {
-          var titleQuery = queryString.substring(6, queryString.length);
-          influxQuery = influxQuery + ' title =~ /.*' + titleQuery + '.*/i';
+      function searchDashboardsByField(dashboards, field, string) {
+        var returnDashboards = [];
+        for(var i in dashboards) {
+          var dashboard = dashboards[i];
+          if(dashboard.hasOwnProperty(field)) {
+            if(dashboard[field].toLowerCase().search(string.toLowerCase().trim()) !== -1) {
+              returnDashboards.push(dashboard);
+            }
+          }
         }
-        else {
-          influxQuery = influxQuery + '(tags =~ /.*' + queryString + '.*/i or title =~ /.*' + queryString + '.*/i)';
-        }
+        return returnDashboards;
       }
 
-      return this._seriesQuery(influxQuery).then(function(results) {
-        var hits = { dashboards: [], tags: [], tagsOnly: false };
-
-        if (!results || !results.length) {
-          return hits;
+      function searchDashboardsByTags(dashboards, tags) {
+        var results = [];
+        function isTagsExist(tagsArr, tagsList) {
+          var tagCount = 0;
+          for(var i in tagsList) {
+            var tag = tagsList[i];
+            if(tagsArr.indexOf(tag) !== -1) {
+              tagCount++;
+            }
+          }
+          return tagCount === tagsList.length;
         }
 
-        var dashCol = _.indexOf(results[0].columns, 'title');
-        var tagsCol = _.indexOf(results[0].columns, 'tags');
-
-        for (var i = 0; i < results.length; i++) {
-          var hit =  {
-            id: results[i].points[0][dashCol],
-            title: results[i].points[0][dashCol],
-            tags: results[i].points[0][tagsCol].split(",")
-          };
-          hit.tags = hit.tags[0] ? hit.tags : [];
-          hits.dashboards.push(hit);
+        for(var i in dashboards) {
+          var dashboard = dashboards[i];
+          if(dashboard.hasOwnProperty('tags')) {
+            if(isTagsExist(dashboard.tags, tags)) {
+              results.push(dashboard);
+            }
+          }
         }
-        return hits;
-      });
+        return results;
+      }
+
+      function searchTags(dashboards, field, string) {
+        var countTags = {};
+        var result = [];
+        for(var i in dashboards) {
+          var dashboard = dashboards[i];
+          if(dashboard.hasOwnProperty(field)) {
+            for(var t in dashboard[field]) {
+              var tag = dashboard[field][t];
+              if(tag.toLowerCase().search(string.toLowerCase().trim()) !== -1) {
+                if(!tag.hasOwnProperty(tag)) {
+                  countTags[tag] = 1;
+                } else {
+                  countTags[tag]++;
+                }
+              }
+            }
+            for(var tagName in countTags) {
+              result.push({
+                term: tagName,
+                count: countTags[tagName]
+              });
+            }
+          }
+        }
+        return result;
+      }
+
+      function searchByTitleAndTags(dashboards, tags, titleString) {
+        var tagDashboards = searchDashboardsByTags(dashboards, tags);
+        return searchDashboardsByField(tagDashboards, 'title', titleString);
+      }
+
+      var hits = { dashboards: [], tags: [], tagsOnly: false };
+      var deferred = $q.defer();
+      hits.dashboards = angular.fromJson(store.get(dashboardId)) || [];
+
+      if(queryString.indexOf('title:') === 0) {
+        hits.dashboards = searchDashboardsByField(hits.dashboards, 'title', queryString.substring(6, queryString.length));
+      }
+      else if(queryString.indexOf('tags!:') === 0) {
+        hits.tags = searchTags(hits.dashboards, 'tags', queryString.substring(6, queryString.length));
+        hits.tagsOnly = true;
+      }
+      else if(queryString.indexOf('tags:') === 0) {
+        var tagQuery = false;
+        var titleQuery = false;
+        var splitQuery = queryString.split('AND');
+        for(var sq in splitQuery) {
+          var query = splitQuery[sq].trim();
+          if(query.indexOf('tags:') === 0) {
+            tagQuery = query.substring(5, query.length).trim().split(',');
+          }
+          else if(query.indexOf('title:') === 0) {
+            titleQuery = query.substring(6, query.length).trim();
+          }
+        }
+        hits.dashboards = searchByTitleAndTags(hits.dashboards, tagQuery, titleQuery);
+      }
+
+      deferred.resolve(hits);
+      return deferred.promise;
     };
 
     function handleInfluxQueryResponse(alias, groupByField, seriesList) {
