@@ -24,7 +24,7 @@ function (angular, config, _, $, store) {
       if ($rootScope.profilingEnabled) { $scope.initProfiling(); }
 
       $scope.dashAlerts = alertSrv;
-      $scope.grafana = { style: 'dark' };
+      $scope.grafana = { style: 'cloudify' };
     };
 
     $scope.toggleConsole = function() {

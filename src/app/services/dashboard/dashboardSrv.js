@@ -23,7 +23,7 @@ function (angular, $, kbn, _, moment) {
       this.title = data.title || 'No Title';
       this.originalTitle = this.title;
       this.tags = data.tags || [];
-      this.style = data.style || "dark";
+      this.style = data.style || "cloudify";
       this.timezone = data.timezone || 'browser';
       this.editable = data.editble || true;
       this.rows = data.rows || [];
