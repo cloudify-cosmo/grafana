@@ -129,7 +129,9 @@ require([
     'specs/kbn-format-specs',
     'specs/dashboardSrv-specs',
     'specs/dashboardViewStateSrv-specs',
-    'specs/influxSeries-specs'
+    'specs/influxSeries-specs',
+    'specs/cloudify-datasource-specs',
+    'specs/cloudifySeries-specs'
   ], function () {
     window.__karma__.start();
   });

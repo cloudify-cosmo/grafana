@@ -36,10 +36,6 @@ function (angular, _, kbn, store, CloudifySeries) {
       this.annotationEditorSrc = 'app/partials/cloudify/annotation_editor.html';
     }
 
-    CloudifyDatasource.prototype.getDashboardUrl = function() {
-      return this.dashboardUrl;
-    };
-
     CloudifyDatasource.prototype.query = function(filterSrv, options) {
       var promises = _.map(options.targets, function(target) {
         var query;
