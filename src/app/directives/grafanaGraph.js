@@ -10,7 +10,7 @@ function (angular, $, kbn, moment, _) {
 
   var module = angular.module('grafana.directives');
 
-  module.directive('grafanaGraph', function($rootScope) {
+  module.directive('grafanaGraph', function($rootScope, timeSrv) {
     return {
       restrict: 'A',
       template: '<div> </div>',
@@ -355,7 +355,7 @@ function (angular, $, kbn, moment, _) {
               value = item.datapoint[1];
             }
 
-            value = kbn.getFormatFunction(format, 2)(value);
+            value = kbn.getFormatFunction(format, 2)(value, item.series.yaxis);
             timestamp = dashboard.formatDate(item.datapoint[0]);
 
             $tooltip.html(group + value + " @ " + timestamp).place_tt(pos.pageX, pos.pageY);
@@ -416,7 +416,7 @@ function (angular, $, kbn, moment, _) {
 
         elem.bind("plotselected", function (event, ranges) {
           scope.$apply(function() {
-            scope.filter.setTime({
+            timeSrv.setTime({
               from  : moment.utc(ranges.xaxis.from).toDate(),
               to    : moment.utc(ranges.xaxis.to).toDate(),
             });

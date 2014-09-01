@@ -10,7 +10,7 @@ function (angular, _, config, gfunc, Parser) {
 
   var module = angular.module('grafana.controllers');
 
-  module.controller('GraphiteTargetCtrl', function($scope, $sce) {
+  module.controller('GraphiteTargetCtrl', function($scope, $sce, templateSrv) {
 
     $scope.init = function() {
       $scope.target.target = $scope.target.target || '';
@@ -110,7 +110,7 @@ function (angular, _, config, gfunc, Parser) {
       }
 
       var path = getSegmentPathUpTo(fromIndex + 1);
-      return $scope.datasource.metricFindQuery($scope.filter, path)
+      return $scope.datasource.metricFindQuery(path)
         .then(function(segments) {
           if (segments.length === 0) {
             $scope.segments = $scope.segments.splice(0, fromIndex);
@@ -147,16 +147,16 @@ function (angular, _, config, gfunc, Parser) {
       var query = index === 0 ?
         '*' : getSegmentPathUpTo(index) + '.*';
 
-      return $scope.datasource.metricFindQuery($scope.filter, query)
+      return $scope.datasource.metricFindQuery(query)
         .then(function(segments) {
           $scope.altSegments = _.map(segments, function(segment) {
             return new MetricSegment({ value: segment.text, expandable: segment.expandable });
           });
 
-          _.each($scope.filter.templateParameters, function(templateParameter) {
+          _.each(templateSrv.variables, function(variable) {
             $scope.altSegments.unshift(new MetricSegment({
               type: 'template',
-              value: '[[' + templateParameter.name + ']]',
+              value: '[[' + variable.name + ']]',
               expandable: true,
             }));
           });

@@ -2,6 +2,8 @@
 @import "graph.less";
 @import "console.less";
 @import "bootstrap-tagsinput.less";
+@import "tables_lists.less";
+@import "search.less";
 
 .hide-controls {
   padding: 0;
@@ -29,85 +31,6 @@
 
   .grafana-menu-stop-playlist {
     display: list-item;
-  }
-}
-
-// Search
-
-.grafana-search-panel {
-  .search-field-wrapper {
-    padding: 6px 10px;
-    input {
-      width: 100%;
-    }
-    button {
-      margin: 0 2px 0 0;
-    }
-    > span {
-      display: block;
-      overflow: hidden;
-      padding-right: 25px;
-    }
-  }
-}
-
-.search-results-container {
-  max-height: 600px;
-  overflow: auto;
-  display: block;
-  line-height: 28px;
-
-  .search-result-item:hover, .search-result-item.selected {
-    .search-result-link, .search-result-link > .icon {
-      color: @grafanaListHighlight;
-    }
-    .search-result-tag {
-      opacity: 0.70;
-      color: white;
-    }
-  }
-
-  .search-result-link {
-    color: @grafanaListMainLinkColor;
-    .icon {
-      padding-right: 10px;
-      color: @grafanaListHighlightContrast;
-    }
-  }
-
-  .search-result-item:nth-child(odd) {
-    background-color: @grafanaListAccent;
-  }
-
-  .search-result-item {
-    padding: 0px 10px;
-    white-space: nowrap;
-    border-top: 1px solid @grafanaListBorderTop;
-    border-bottom: 1px solid @grafanaListBorderBottom;
-  }
-
-  .search-result-tags {
-    float: right;
-    .label-tag {
-      margin-left: 6px;
-      font-size: 11px;
-      padding: 2px 6px;
-    }
-  }
-
-  .search-result-actions {
-    float: right;
-    padding-left: 20px;
-  }
-}
-
-.search-tagview-switch {
-  position: absolute;
-  top: 15px;
-  right: 266px;
-  color: darken(@linkColor, 30%);
-  &.active {
-    color: @linkColor;
   }
 }
 
@@ -179,7 +102,7 @@
   }
 }
 
-.dashboard-fullscreen .container-fluid.main {
+.dashboard-fullscreen .main-view-container {
   height: 0px;
   width: 0px;
   position: fixed;
@@ -188,38 +111,6 @@
 
 .histogram-chart {
   position:relative;
-}
-
-.panel-full-edit-tabs {
-  margin-top: 30px;
-  min-height: 250px;
-  margin-left: -10px;
-  margin-right: -10px;
-  background-color: @fullEditBackground;
-  border-top: 1px solid @fullEditBorder;
-
-  .tabs {
-    .nav-tabs {
-      margin: 0;
-      background: @fullEditTabsBackground;
-      border-top: 1px solid @fullEditTabsBorder;
-    }
-
-    .tab-content {
-      display: none;
-    }
-  }
-  .tab-content {
-    overflow: visible;
-    padding: 15px;
-  }
-
-  .nav-tabs > li > a {
-    line-height: 15px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    font-size: 0.8rem;
-  }
 }
 
 .grafana-target:last-child {
@@ -284,6 +175,14 @@
   &a:hover {
     background: @grafanaTargetFuncBackground;
   }
+
+  &.template-param-name {
+    border-right: none;
+    padding-right: 3px;
+  }
+  &.annotation-segment {
+    padding: 8px 15px;
+  }
 }
 
 .grafana-target-function {
@@ -328,10 +227,13 @@ input[type=text].grafana-function-param-input {
     white-space: nowrap;
   }
 
-  a {
-    padding: 8px 7px;
+  .icon {
     position: relative;
     top: 8px;
+  }
+
+  a {
+    padding: 8px 7px;
     color: @grafanaTargetColor;
     font-size: 16px;
 
@@ -404,7 +306,6 @@ select.grafana-target-segment-input {
     padding: 0;
   }
 }
-
 
 .scrollable {
   max-height: 300px;
@@ -507,12 +408,6 @@ select.grafana-target-segment-input {
   padding: 10px;
 }
 
-.grafana-version-footer {
-  padding-top: 15px;
-  text-align: left;
-}
-
-
 .metrics-editor-help:hover {
   .hide {
     display: block;
@@ -539,3 +434,51 @@ select.grafana-target-segment-input {
   max-width: 400px;
 }
 
+.dashboard-edit-view {
+  padding: 20px;
+  background-color: @grafanaPanelBackground;
+  position: relative;
+}
+
+.dashboard-editor-body {
+  padding: 20px 10px;
+  min-height: 100px;
+}
+
+.dashboard-editor-footer {
+  overflow: hidden;
+}
+
+.dashboard-editor-header {
+  overflow: hidden;
+  .tabs {
+    float: left;
+  }
+  .nav {
+    margin: 0;
+  }
+}
+
+.dashboard-editor-title {
+  border-bottom: 1px solid @fullEditBorder;
+  padding-right: 20px;
+  float: left;
+  color: @linkColor;
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 38px;
+  margin: 0;
+  .icon {
+    padding: 0 8px 0 5px;
+    color: @textColor;
+  }
+}
+
+.grafana-version-info {
+  position: absolute;
+  bottom: 2px;
+  left: 3px;
+  font-size: 80%;
+  color: darken(@gray, 25%);
+  a { color: darken(@gray, 25%); }
+}

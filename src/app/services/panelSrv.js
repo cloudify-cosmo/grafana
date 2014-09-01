@@ -111,7 +111,6 @@ function (angular, _) {
 
       $scope.datasources = datasourceSrv.getMetricSources();
       $scope.setDatasource($scope.panel.datasource);
-
       $scope.dashboardViewState.registerPanel($scope);
 
       if ($scope.get_data) {
@@ -127,13 +126,6 @@ function (angular, _) {
 
         if (!$scope.skipDataOnInit) {
           $scope.get_data();
-        }
-      }
-
-      if ($rootScope.profilingEnabled) {
-        $rootScope.performance.panelsInitialized++;
-        if ($rootScope.performance.panelsInitialized === $scope.dashboard.rows.length) {
-          $rootScope.performance.allPanelsInitialized = new Date().getTime();
         }
       }
     };

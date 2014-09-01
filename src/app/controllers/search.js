@@ -9,7 +9,7 @@ function (angular, _, config, $) {
 
   var module = angular.module('grafana.controllers');
 
-  module.controller('SearchCtrl', function($scope, $rootScope, $element, $location, datasourceSrv) {
+  module.controller('SearchCtrl', function($scope, $rootScope, $element, $location, datasourceSrv, $timeout) {
 
     $scope.init = function() {
       $scope.giveSearchFocus = 0;
@@ -17,12 +17,18 @@ function (angular, _, config, $) {
       $scope.results = {dashboards: [], tags: [], metrics: []};
       $scope.query = { query: 'title:' };
       $scope.db = datasourceSrv.getGrafanaDB();
-      $scope.onAppEvent('open-search', $scope.openSearch);
+
+      $timeout(function() {
+        $scope.giveSearchFocus = $scope.giveSearchFocus + 1;
+        $scope.query.query = 'title:';
+        $scope.search();
+      }, 100);
+
     };
 
     $scope.keyDown = function (evt) {
       if (evt.keyCode === 27) {
-        $element.find('.dropdown-toggle').dropdown('toggle');
+        $scope.emitAppEvent('hide-dash-editor');
       }
       if (evt.keyCode === 40) {
         $scope.selectedIndex++;
@@ -94,20 +100,9 @@ function (angular, _, config, $) {
 
     $scope.search = function() {
       $scope.showImport = false;
-      $scope.selectedIndex = -1;
+      $scope.selectedIndex = 0;
 
       $scope.searchDashboards($scope.query.query);
-    };
-
-    $scope.openSearch = function (evt) {
-      if (evt) {
-        $element.next().find('.dropdown-toggle').dropdown('toggle');
-      }
-
-      $scope.searchOpened = true;
-      $scope.giveSearchFocus = $scope.giveSearchFocus + 1;
-      $scope.query.query = 'title:';
-      $scope.search();
     };
 
     $scope.addMetricToCurrentDashboard = function (metricId) {
@@ -139,13 +134,18 @@ function (angular, _, config, $) {
 
   module.directive('xngFocus', function() {
     return function(scope, element, attrs) {
-      $(element).click(function(e) {
+      element.click(function(e) {
         e.stopPropagation();
       });
 
       scope.$watch(attrs.xngFocus,function (newValue) {
+        if (!newValue) {
+          return;
+        }
         setTimeout(function() {
-          newValue && element.focus();
+          element.focus();
+          var pos = element.val().length * 2;
+          element[0].setSelectionRange(pos, pos);
         }, 200);
       },true);
     };
@@ -173,7 +173,6 @@ function (angular, _, config, $) {
         "#58140C","#052B51","#511749","#3F2B5B",
       ];
       var color = colors[Math.abs(hash % colors.length)];
-      console.log("namei "  + name + " color: " + color, hash % 4);
       element.css("background-color", color);
     };
 

@@ -11,7 +11,7 @@ function (angular, _, moment, config, store) {
 
   var module = angular.module('grafana.controllers');
 
-  module.controller('DashboardNavCtrl', function($scope, $rootScope, alertSrv, $location, playlistSrv, datasourceSrv) {
+  module.controller('DashboardNavCtrl', function($scope, $rootScope, alertSrv, $location, playlistSrv, datasourceSrv, timeSrv) {
 
     $scope.init = function() {
       $scope.db = datasourceSrv.getGrafanaDB();
@@ -69,6 +69,10 @@ function (angular, _, moment, config, store) {
       return false;
     };
 
+    $scope.openSearch = function() {
+      $scope.emitAppEvent('show-dash-editor', { src: 'app/partials/search.html' });
+    };
+
     $scope.saveDashboard = function() {
       if (!this.isAdmin()) { return false; }
 
@@ -108,31 +112,35 @@ function (angular, _, moment, config, store) {
       window.saveAs(blob, $scope.dashboard.title + '-' + new Date().getTime());
     };
 
-    // function $scope.zoom
-    // factor :: Zoom factor, so 0.5 = cuts timespan in half, 2 doubles timespan
     $scope.zoom = function(factor) {
-      var _range = $scope.filter.timeRange();
-      var _timespan = (_range.to.valueOf() - _range.from.valueOf());
-      var _center = _range.to.valueOf() - _timespan/2;
+      var range = timeSrv.timeRange();
 
-      var _to = (_center + (_timespan*factor)/2);
-      var _from = (_center - (_timespan*factor)/2);
+      var timespan = (range.to.valueOf() - range.from.valueOf());
+      var center = range.to.valueOf() - timespan/2;
 
-      // If we're not already looking into the future, don't.
-      if(_to > Date.now() && _range.to < Date.now()) {
-        var _offset = _to - Date.now();
-        _from = _from - _offset;
-        _to = Date.now();
+      var to = (center + (timespan*factor)/2);
+      var from = (center - (timespan*factor)/2);
+
+      if(to > Date.now() && range.to <= Date.now()) {
+        var offset = to - Date.now();
+        from = from - offset;
+        to = Date.now();
       }
 
-      $scope.filter.setTime({
-        from:moment.utc(_from).toDate(),
-        to:moment.utc(_to).toDate(),
+      timeSrv.setTime({
+        from: moment.utc(from).toDate(),
+        to: moment.utc(to).toDate(),
       });
     };
 
     $scope.styleUpdated = function() {
       $scope.grafana.style = $scope.dashboard.style;
+    };
+
+    $scope.editJson = function() {
+      var editScope = $rootScope.$new();
+      editScope.json = angular.toJson($scope.dashboard, true);
+      $scope.emitAppEvent('show-dash-editor', { src: 'app/partials/edit_json.html', scope: editScope });
     };
 
     $scope.openSaveDropdown = function() {

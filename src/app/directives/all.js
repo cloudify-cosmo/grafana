@@ -4,6 +4,7 @@ define([
   './grafanaPanel',
   './grafanaSimplePanel',
   './ngBlur',
+  './dashEditLink',
   './ngModelOnBlur',
   './tip',
   './confirmClick',
@@ -14,6 +15,7 @@ define([
   './bodyClass',
   './addGraphiteFunc',
   './graphiteFuncEditor',
+  './templateParamSelector',
   './grafanaVersionCheck',
   './influxdbFuncEditor'
 ], function () {});

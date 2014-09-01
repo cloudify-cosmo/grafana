@@ -9,7 +9,7 @@ function (angular, _, kbn, InfluxSeries) {
 
   var module = angular.module('grafana.services');
 
-  module.factory('InfluxDatasource', function($q, $http) {
+  module.factory('InfluxDatasource', function($q, $http, templateSrv) {
 
     function InfluxDatasource(datasource) {
       this.type = 'influxDB';
@@ -31,7 +31,7 @@ function (angular, _, kbn, InfluxSeries) {
       this.annotationEditorSrc = 'app/partials/influxdb/annotation_editor.html';
     }
 
-    InfluxDatasource.prototype.query = function(filterSrv, options) {
+    InfluxDatasource.prototype.query = function(options) {
       var promises = _.map(options.targets, function(target) {
         var query;
         var alias = '';
@@ -73,7 +73,7 @@ function (angular, _, kbn, InfluxSeries) {
           }
 
           query = queryElements.join(" ");
-          query = filterSrv.applyTemplateToTarget(query);
+          query = templateSrv.replace(query);
         }
         else {
 
@@ -100,7 +100,7 @@ function (angular, _, kbn, InfluxSeries) {
           }
 
           query = _.template(template, templateData, this.templateSettings);
-          query = filterSrv.applyTemplateToTarget(query);
+          query = templateSrv.replace(query);
 
           if (target.groupby_field_add) {
             groupByField = target.groupby_field;
@@ -110,7 +110,7 @@ function (angular, _, kbn, InfluxSeries) {
         }
 
         if (target.alias) {
-          alias = filterSrv.applyTemplateToTarget(target.alias);
+          alias = templateSrv.replace(target.alias);
         }
 
         var handleResponse = _.partial(handleInfluxQueryResponse, alias, groupByField);
@@ -161,10 +161,10 @@ function (angular, _, kbn, InfluxSeries) {
       });
     };
 
-    InfluxDatasource.prototype.metricFindQuery = function (filterSrv, query) {
+    InfluxDatasource.prototype.metricFindQuery = function (query) {
       var interpolated;
       try {
-        interpolated = filterSrv.applyTemplateToTarget(query);
+        interpolated = templateSrv.replace(query);
       }
       catch (err) {
         return $q.reject(err);

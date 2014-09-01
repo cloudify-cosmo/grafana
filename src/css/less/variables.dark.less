@@ -6,7 +6,7 @@
 // -------------------------
 @black:                 #000;
 @gray:                  #bbb;
-@grayDark:              #303030;
+@grayDark:              #262626;
 @grayDarker:            #1f1f1f;
 
 @grayLight:             #ADAFAE;
@@ -29,15 +29,8 @@
 // -------------------------
 @grafanaPanelBackground: @grayDarker;
 
-// Submenu
-@submenuBackground: #292929;
-@submenuBorder: #202020;
-
 // Tabs
-@fullEditTabsBackground:  @grayDark;
-@fullEditBorder:          @black;
-@fullEditBackground:      transparent;
-@fullEditTabsBorder:      #555;
+@fullEditBorder:          #555;
 
 // Graphite Target Editor
 @grafanaTargetBorder:         @black;
@@ -46,8 +39,8 @@
 @grafanaTargetColorHide:      darken(#c8c8c8, 25%);
 @grafanaTargetSegmentBorder:  #050505;
 
-@grafanaTargetFuncBackground: #444;
-@grafanaTargetFuncHightlight: #555;
+@grafanaTargetFuncBackground: #333;
+@grafanaTargetFuncHightlight: #444;
 
 // Scaffolding
 // -------------------------
@@ -95,9 +88,9 @@
 
 // Lists
 @grafanaListBackground:  transparent;
-@grafanaListAccent:         #232323;
-@grafanaListBorderTop:      #3E3E3E;
-@grafanaListBorderBottom:   #1c1919;
+@grafanaListAccent:         @grayDark;
+@grafanaListBorderTop:      @grayDark;
+@grafanaListBorderBottom:   @black;
 @grafanaListHighlight:      @blue;
 @grafanaListHighlightContrast: #4F4F4F;
 @grafanaListMainLinkColor: @linkColor;
@@ -134,12 +127,10 @@
 @btnInverseBackgroundHighlight:     darken(@black, 5%);
 
 
-
-
 // Forms
 // -------------------------
-@inputBackground:               lighten(@grayDark,10%);
-@inputBorder:                   lighten(@grayDark,20%);
+@inputBackground:               lighten(@grayDark,5%);
+@inputBorder:                   lighten(@grayDark,5%);
 @inputBorderRadius:             @baseBorderRadius;
 @inputDisabledBackground:       #555;
 @formActionsBackground:         transparent;
