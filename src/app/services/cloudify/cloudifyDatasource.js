@@ -10,7 +10,7 @@ function (angular, _, kbn, store, CloudifySeries) {
 
   var module = angular.module('grafana.services');
 
-  module.factory('CloudifyDatasource', function($q, $http, $routeParams) {
+  module.factory('CloudifyDatasource', function($q, $http, templateSrv, $routeParams) {
 
     var dashboardId = 'grafana-default';
     if($routeParams.hasOwnProperty('dashboardId')) {
@@ -36,7 +36,7 @@ function (angular, _, kbn, store, CloudifySeries) {
       this.annotationEditorSrc = 'app/partials/cloudify/annotation_editor.html';
     }
 
-    CloudifyDatasource.prototype.query = function(filterSrv, options) {
+    CloudifyDatasource.prototype.query = function(options) {
       var promises = _.map(options.targets, function(target) {
         var query;
         var alias = '';
@@ -78,7 +78,7 @@ function (angular, _, kbn, store, CloudifySeries) {
           }
 
           query = queryElements.join(" ");
-          query = filterSrv.applyTemplateToTarget(query);
+          query = templateSrv.replace(query);
         }
         else {
 
@@ -105,7 +105,7 @@ function (angular, _, kbn, store, CloudifySeries) {
           }
 
           query = _.template(template, templateData, this.templateSettings);
-          query = filterSrv.applyTemplateToTarget(query);
+          query = templateSrv.replace(query);
 
           if (target.groupby_field_add) {
             groupByField = target.groupby_field;
@@ -115,7 +115,7 @@ function (angular, _, kbn, store, CloudifySeries) {
         }
 
         if (target.alias) {
-          alias = filterSrv.applyTemplateToTarget(target.alias);
+          alias = templateSrv.replace(target.alias);
         }
 
         var handleResponse = _.partial(handleInfluxQueryResponse, alias, groupByField);
@@ -169,7 +169,7 @@ function (angular, _, kbn, store, CloudifySeries) {
     CloudifyDatasource.prototype.metricFindQuery = function (filterSrv, query) {
       var interpolated;
       try {
-        interpolated = filterSrv.applyTemplateToTarget(query);
+        interpolated = templateSrv.replace(query);
       }
       catch (err) {
         return $q.reject(err);
