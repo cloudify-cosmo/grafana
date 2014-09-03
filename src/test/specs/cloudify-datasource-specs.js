@@ -53,7 +53,7 @@ define([
                 var ds = new ctx.service({ urls: [''] });
 
                 ctx.$httpBackend.expect('GET', urlExpected).respond(response);
-                ds.query(ctx.filterSrv, query).then(function(data) { results = data; });
+                ds.query(query).then(function(data) { results = data; });
                 ctx.$httpBackend.flush();
             });
 
