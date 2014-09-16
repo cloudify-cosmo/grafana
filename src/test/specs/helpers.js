@@ -1,6 +1,7 @@
 define([
-    'kbn'
-], function(kbn) {
+    'kbn',
+    'lodash'
+], function(kbn, _) {
   'use strict';
 
   function ControllerTestContext() {
@@ -47,14 +48,30 @@ define([
 
   function ServiceTestContext() {
     var self = this;
+    self.templateSrv = new TemplateSrvStub();
+    self.timeSrv = new TimeSrvStub();
+    self.datasourceSrv = {};
+    self.$routeParams = {};
+
+    this.providePhase = function(mocks) {
+     return module(function($provide) {
+       _.each(mocks, function(key) {
+         $provide.value(key, self[key]);
+       });
+      });
+    };
 
     this.createService = function(name) {
-      return inject([name, '$q', '$rootScope', '$httpBackend', function(InfluxDatasource, $q, $rootScope, $httpBackend) {
-        self.service = InfluxDatasource;
+      return inject(function($q, $rootScope, $httpBackend, $injector) {
         self.$q = $q;
         self.$rootScope = $rootScope;
         self.$httpBackend =  $httpBackend;
-      }]);
+
+        self.$rootScope.onAppEvent = function() {};
+        self.$rootScope.emitAppEvent = function() {};
+
+        self.service = $injector.get(name);
+      });
     };
   }
 
@@ -82,10 +99,19 @@ define([
 
   function TemplateSrvStub() {
     this.variables = [];
-    this.replace = function() {};
+    this.templateSettings = { interpolate : /\[\[([\s\S]+?)\]\]/g };
+    this.data = {};
+    this.replace = function(text) {
+      return _.template(text, this.data,  this.templateSettings);
+    };
+    this.init = function() {};
+    this.updateTemplateData = function() { };
+    this.variableExists = function() { return false; };
+    this.highlightVariablesAsHtml = function(str) { return str; };
+    this.setGrafanaVariable = function(name, value) {
+      this.data[name] = value;
+    };
   }
-
-
 
   return {
     ControllerTestContext: ControllerTestContext,

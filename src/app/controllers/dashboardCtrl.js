@@ -29,6 +29,7 @@ function (angular, $, config, _) {
     $scope.init = function() {
       $scope.availablePanels = config.panels;
       $scope.onAppEvent('setup-dashboard', $scope.setupDashboard);
+      $scope.onAppEvent('show-json-editor', $scope.showJsonEditor);
       $scope.reset_row();
       $scope.registerWindowResizeEvent();
     };
@@ -43,18 +44,20 @@ function (angular, $, config, _) {
     $scope.setupDashboard = function(event, dashboardData) {
       $rootScope.performance.dashboardLoadStart = new Date().getTime();
       $rootScope.performance.panelsInitialized = 0;
-      $rootScope.performance.panelsRendered= 0;
+      $rootScope.performance.panelsRendered = 0;
 
       $scope.dashboard = dashboardSrv.create(dashboardData);
       $scope.dashboardViewState = dashboardViewStateSrv.create($scope);
 
       // init services
       timeSrv.init($scope.dashboard);
-      templateValuesSrv.init($scope.dashboard);
+      templateValuesSrv.init($scope.dashboard, $scope.dashboardViewState);
       panelMoveSrv.init($scope.dashboard, $scope);
 
       $scope.checkFeatureToggles();
       dashboardKeybindings.shortcuts($scope);
+
+      $scope.setWindowTitleAndTheme();
 
       $scope.emitAppEvent("dashboard-loaded", $scope.dashboard);
     };
@@ -90,6 +93,15 @@ function (angular, $, config, _) {
       };
     };
 
+    $scope.edit_path = function(type) {
+      var p = $scope.panel_path(type);
+      if(p) {
+        return p+'/editor.html';
+      } else {
+        return false;
+      }
+    };
+
     $scope.panel_path =function(type) {
       if(type) {
         return 'app/panels/'+type.replace(".","/");
@@ -98,13 +110,11 @@ function (angular, $, config, _) {
       }
     };
 
-    $scope.edit_path = function(type) {
-      var p = $scope.panel_path(type);
-      if(p) {
-        return p+'/editor.html';
-      } else {
-        return false;
-      }
+    $scope.showJsonEditor = function(evt, options) {
+      var editScope = $rootScope.$new();
+      editScope.object = options.object;
+      editScope.updateHandler = options.updateHandler;
+      $scope.emitAppEvent('show-dash-editor', { src: 'app/partials/edit_json.html', scope: editScope });
     };
 
     $scope.checkFeatureToggles = function() {

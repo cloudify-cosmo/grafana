@@ -16,7 +16,7 @@ function (angular, _) {
       name: '',
       options: [],
       includeAll: false,
-      allFormat: 'Glob',
+      allFormat: 'glob',
     };
 
     $scope.init = function() {
@@ -69,7 +69,7 @@ function (angular, _) {
     };
 
     $scope.typeChanged = function () {
-      if ($scope.current.type === 'time period') {
+      if ($scope.current.type === 'interval') {
         $scope.current.query = '1m,10m,30m,1h,6h,12h,1d,7d,14d,30d';
       }
     };
