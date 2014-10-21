@@ -44,7 +44,7 @@ function (angular, $, config, _, store) {
         url: config.datasources.cloudify.url + '/dashboards/' + $routeParams.dashboardId,
         method: 'GET'
       }).then(function (result) {
-        $scope.emitAppEvent('setup-dashboard', result.data);
+        $scope.initDashboard(result.data, $scope);
       });
     };
 
