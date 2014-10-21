@@ -62,7 +62,7 @@ function (angular, _, config, $) {
     };
 
     $scope.goToDashboard = function(id) {
-        $location.path(datasourceSrv.default.dashboardUrl + '/' + id);
+      $location.path(datasourceSrv.default.dashboardUrl + '/' + id);
     };
 
     $scope.shareDashboard = function(title, id, $event) {

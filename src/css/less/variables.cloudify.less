@@ -60,7 +60,8 @@
 // Links
 // -------------------------
 @linkColor:             @blue;
-@linkColorHover:        darken(@linkColor, 10%);
+@linkColorDisabled:     lighten(@linkColor,35%);
+@linkColorHover:        @blue;
 
 
 // Typography
@@ -193,7 +194,7 @@
 
 // Input placeholder text color
 // -------------------------
-@placeholderText:         @gray;
+@placeholderText:         @grayLight;
 
 
 // Hr border color
@@ -300,11 +301,11 @@
 @popoverArrowOuterWidth:  @popoverArrowWidth + 1;
 @popoverArrowOuterColor:  rgba(0,0,0,.25);
 
-
+// images
+@checkboxImageUrl: '../img/checkbox_white.png';
 
 // GRID
 // --------------------------------------------------
-
 
 // Default 940px grid
 // -------------------------

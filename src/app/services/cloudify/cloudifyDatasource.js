@@ -23,9 +23,7 @@ function (angular, _, kbn, store, CloudifySeries, CloudifyQueryBuilder) {
       this.editorSrc = 'app/partials/cloudify/editor.html';
       this.urls = datasource.urls;
       this.name = datasource.name;
-      this.templateSettings = {
-        interpolate : /\[\[([\s\S]+?)\]\]/g,
-      };
+      this.basicAuth = datasource.basicAuth;
       this.dashboardUrl = 'dashboard/cloudify/' + $routeParams.dashboardId;
 
       this.saveTemp = _.isUndefined(datasource.save_temp) ? true : datasource.save_temp;
@@ -66,7 +64,6 @@ function (angular, _, kbn, store, CloudifySeries, CloudifyQueryBuilder) {
       return $q.all(promises).then(function(results) {
         return { data: _.flatten(results) };
       });
-
     };
 
     CloudifyDatasource.prototype.annotationQuery = function(annotation, filterSrv, rangeUnparsed) {
@@ -181,6 +178,11 @@ function (angular, _, kbn, store, CloudifySeries, CloudifyQueryBuilder) {
           data:   data,
           inspect: { type: 'influxdb' },
         };
+
+        options.headers = options.headers || {};
+        if (_this.basicAuth) {
+          options.headers.Authorization = 'Basic ' + _this.basicAuth;
+        }
 
         return $http(options).success(function (data) {
           deferred.resolve(data);
