@@ -40,6 +40,13 @@ function (_) {
   });
 
   addFuncDef({
+    name: 'perSecond',
+    category: categories.Transform,
+    params: [],
+    defaultParams: [],
+  });
+
+  addFuncDef({
     name: "holtWintersForecast",
     category: categories.Calculate,
   });
@@ -84,6 +91,13 @@ function (_) {
     params: optionalSeriesRefArgs,
     defaultParams: ['#A'],
     category: categories.Calculate,
+  });
+
+  addFuncDef({
+    name: 'group',
+    params: optionalSeriesRefArgs,
+    defaultParams: ['#A', '#B'],
+    category: categories.Combine,
   });
 
   addFuncDef({
@@ -141,7 +155,10 @@ function (_) {
   addFuncDef({
     name: 'averageSeriesWithWildcards',
     category: categories.Combine,
-    params: [{ name: "node", type: "int" }],
+    params: [
+      { name: "node", type: "int" },
+      { name: "node", type: "int", optional: true },
+    ],
     defaultParams: [3]
   });
 
@@ -186,7 +203,7 @@ function (_) {
       {
         name: "node",
         type: "int",
-        options: [1,2,3,4,5,6,7,8,9,10,12]
+        options: [0,1,2,3,4,5,6,7,8,9,10,12]
       },
       {
         name: "function",

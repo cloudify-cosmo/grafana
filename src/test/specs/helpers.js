@@ -1,6 +1,6 @@
 define([
-    'kbn',
-    'lodash'
+ 'kbn',
+ 'lodash'
 ], function(kbn, _) {
   'use strict';
 
@@ -8,6 +8,7 @@ define([
     var self = this;
 
     this.datasource = {};
+    this.$element = {};
     this.annotationsSrv = {};
     this.timeSrv = new TimeSrvStub();
     this.templateSrv = new TemplateSrvStub();
@@ -16,28 +17,37 @@ define([
       get: function() { return self.datasource; }
     };
 
-    this.providePhase = function() {
+    this.providePhase = function(mocks) {
       return module(function($provide) {
         $provide.value('datasourceSrv', self.datasourceSrv);
         $provide.value('annotationsSrv', self.annotationsSrv);
         $provide.value('timeSrv', self.timeSrv);
         $provide.value('templateSrv', self.templateSrv);
+        $provide.value('$element', self.$element);
+        _.each(mocks, function(value, key) {
+          $provide.value(key, value);
+        });
       });
     };
 
     this.createControllerPhase = function(controllerName) {
-      return inject(function($controller, $rootScope, $q) {
+      return inject(function($controller, $rootScope, $q, $location) {
         self.scope = $rootScope.$new();
+        self.$location = $location;
+        self.scope.grafana = {};
         self.scope.panel = {};
         self.scope.row = { panels:[] };
         self.scope.dashboard = {};
         self.scope.dashboardViewState = new DashboardViewStateStub();
+        self.scope.appEvent = sinon.spy();
+        self.scope.onAppEvent = sinon.spy();
 
         $rootScope.colors = [];
         for (var i = 0; i < 50; i++) { $rootScope.colors.push('#' + i); }
 
         self.$q = $q;
         self.scope.skipDataOnInit = true;
+        self.scope.skipAutoInit = true;
         self.controller = $controller(controllerName, {
           $scope: self.scope
         });
@@ -68,7 +78,7 @@ define([
         self.$httpBackend =  $httpBackend;
 
         self.$rootScope.onAppEvent = function() {};
-        self.$rootScope.emitAppEvent = function() {};
+        self.$rootScope.appEvent = function() {};
 
         self.service = $injector.get(name);
       });
@@ -81,6 +91,7 @@ define([
   }
 
   function TimeSrvStub() {
+    this.init = sinon.spy();
     this.time = { from:'now-1h', to: 'now'};
     this.timeRange = function(parse) {
       if (parse === false) {

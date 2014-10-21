@@ -231,10 +231,6 @@ form input.ng-invalid {
   z-index: 9999;
 }
 
-.dragInProgress .panel-container {
-  border: 3px solid rgba(100,100,100,0.50);
-}
-
 .link {
   color: @linkColor;
   cursor: pointer;
@@ -250,11 +246,6 @@ form input.ng-invalid {
 
 .popover {
   max-width: 480px;
-}
-
-.modal {
-  width: 100%;
-  top: 0px !important;
 }
 
 .tiny {
@@ -317,13 +308,38 @@ div.flot-text {
   color: @textColor !important;
 }
 
-.dashboard-notice {
+.page-alert-list {
   z-index:8000;
-  margin-left:0px;
-  padding:3px 0px 3px 0px;
-  width:100%;
-  padding-left:20px;
-  color: @white;
+  min-width: 300px;
+  max-width: 300px;
+  position: fixed;
+  right: 20px;
+  top: 56px;
+
+  .alert {
+    color: @white;
+    padding-bottom: 13px;
+    position: relative;
+  }
+
+  .alert-close {
+    position: absolute;
+    top: -4px;
+    right: -2px;
+    width: 19px;
+    height: 19px;
+    padding: 0;
+    background: @grayLighter;
+    border-radius: 50%;
+    border: none;
+    font-size: 1.1rem;
+    color: @grayDarker;
+  }
+
+  .alert-title {
+    font-weight: bold;
+    padding-bottom: 2px;
+  }
 }
 
 
@@ -540,12 +556,6 @@ div.flot-text {
 .label-tag:hover {
   opacity: 0.85;
   background-color: darken(@purple, 10%);
-}
-
-.annotation-editor-table {
-  td {
-    white-space: nowrap;
-  }
 }
 
 // Top menu

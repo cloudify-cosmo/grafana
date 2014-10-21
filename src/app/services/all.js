@@ -1,12 +1,12 @@
 define([
   './alertSrv',
+  './utilSrv',
   './datasourceSrv',
   './timeSrv',
   './templateSrv',
   './templateValuesSrv',
   './panelSrv',
   './timer',
-  './panelMove',
   './keyboardManager',
   './annotationsSrv',
   './playlistSrv',

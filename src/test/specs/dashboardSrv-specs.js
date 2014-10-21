@@ -82,6 +82,22 @@ define([
 
   });
 
+  describe('when creating dashboard with editable false', function() {
+    var model;
+
+    beforeEach(module('grafana.services'));
+    beforeEach(inject(function(dashboardSrv) {
+      model = dashboardSrv.create({
+        editable: false
+      });
+    }));
+
+    it('should set editable false', function() {
+      expect(model.editable).to.be(false);
+    });
+
+  });
+
   describe('when creating dashboard with old schema', function() {
     var model;
     var graph;
@@ -158,6 +174,28 @@ define([
 
     it('dashboard schema version should be set to latest', function() {
       expect(model.version).to.be(6);
+    });
+
+  });
+
+  describe('when creating dashboard model with missing list for annoations or templating', function() {
+    var model;
+
+    beforeEach(module('grafana.services'));
+    beforeEach(inject(function(dashboardSrv) {
+      model = dashboardSrv.create({
+        annotations: {
+          enable: true,
+        },
+        templating: {
+          enable: true
+        }
+      });
+    }));
+
+    it('should add empty list', function() {
+      expect(model.annotations.list.length).to.be(0);
+      expect(model.templating.list.length).to.be(0);
     });
 
   });

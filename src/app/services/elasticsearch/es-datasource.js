@@ -37,6 +37,7 @@ function (angular, _, config, kbn, moment) {
       };
 
       if (this.basicAuth) {
+        options.withCredentials = true;
         options.headers = {
           "Authorization": "Basic " + this.basicAuth
         };
@@ -85,6 +86,26 @@ function (angular, _, config, kbn, moment) {
         var list = [];
         var hits = results.data.hits.hits;
 
+        var getFieldFromSource = function(source, fieldName) {
+          if (!fieldName) { return; }
+
+          var fieldNames = fieldName.split('.');
+          var fieldValue = source;
+
+          for (var i = 0; i < fieldNames.length; i++) {
+            fieldValue = fieldValue[fieldNames[i]];
+            if (!fieldValue) {
+              console.log('could not find field in annotatation: ', fieldName);
+              return '';
+            }
+          }
+
+          if (_.isArray(fieldValue)) {
+            fieldValue = fieldValue.join(', ');
+          }
+          return fieldValue;
+        };
+
         for (var i = 0; i < hits.length; i++) {
           var source = hits[i]._source;
           var fields = hits[i].fields;
@@ -97,20 +118,10 @@ function (angular, _, config, kbn, moment) {
           var event = {
             annotation: annotation,
             time: moment.utc(time).valueOf(),
-            title: source[titleField],
+            title: getFieldFromSource(source, titleField),
+            tags: getFieldFromSource(source, tagsField),
+            text: getFieldFromSource(source, textField)
           };
-
-          if (source[tagsField]) {
-            if (_.isArray(source[tagsField])) {
-              event.tags = source[tagsField].join(', ');
-            }
-            else {
-              event.tags = source[tagsField];
-            }
-          }
-          if (textField && source[textField]) {
-            event.text = source[textField];
-          }
 
           list.push(event);
         }
@@ -168,7 +179,7 @@ function (angular, _, config, kbn, moment) {
 
         return this._request('PUT', '/dashboard/' + id, this.index, data)
           .then(function(results) {
-            self._removeUnslugifiedDashboard(results, title);
+            self._removeUnslugifiedDashboard(results, title, id);
             return { title: title, url: '/dashboard/db/' + id };
           }, function() {
             throw 'Failed to save to elasticsearch';
@@ -176,8 +187,9 @@ function (angular, _, config, kbn, moment) {
       }
     };
 
-    ElasticDatasource.prototype._removeUnslugifiedDashboard = function(saveResult, title) {
+    ElasticDatasource.prototype._removeUnslugifiedDashboard = function(saveResult, title, id) {
       if (saveResult.statusText !== 'Created') { return; }
+      if (title === id) { return; }
 
       var self = this;
       this._get('/dashboard/' + title).then(function() {
@@ -212,7 +224,7 @@ function (angular, _, config, kbn, moment) {
       var endsInOpen = function(string, opener, closer) {
         var character;
         var count = 0;
-        for (var i=0; i<string.length; i++) {
+        for (var i = 0, len = string.length; i < len; i++) {
           character = string[i];
 
           if (character === opener) {
@@ -267,18 +279,20 @@ function (angular, _, config, kbn, moment) {
             return { dashboards: [], tags: [] };
           }
 
-          var hits = { dashboards: [], tags: results.facets.tags.terms || [] };
+          var resultsHits = results.hits.hits;
+          var displayHits = { dashboards: [], tags: results.facets.tags.terms || [] };
 
-          for (var i = 0; i < results.hits.hits.length; i++) {
-            hits.dashboards.push({
-              id: results.hits.hits[i]._id,
-              title: results.hits.hits[i]._source.title,
-              tags: results.hits.hits[i]._source.tags
+          for (var i = 0, len = resultsHits.length; i < len; i++) {
+            var hit = resultsHits[i];
+            displayHits.dashboards.push({
+              id: hit._id,
+              title: hit._source.title,
+              tags: hit._source.tags
             });
           }
 
-          hits.tagsOnly = tagsOnly;
-          return hits;
+          displayHits.tagsOnly = tagsOnly;
+          return displayHits;
         });
     };
 

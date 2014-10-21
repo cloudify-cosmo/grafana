@@ -29,7 +29,7 @@ function (angular, _, config, $) {
 
     $scope.keyDown = function (evt) {
       if (evt.keyCode === 27) {
-        $scope.emitAppEvent('hide-dash-editor');
+        $scope.appEvent('hide-dash-editor');
       }
       if (evt.keyCode === 40) {
         $scope.moveSelection(1);
@@ -62,7 +62,7 @@ function (angular, _, config, $) {
     };
 
     $scope.goToDashboard = function(id) {
-      $location.path(datasourceSrv.default.dashboardUrl + '/' + id);
+        $location.path(datasourceSrv.default.dashboardUrl + '/' + id);
     };
 
     $scope.shareDashboard = function(title, id, $event) {
@@ -119,9 +119,10 @@ function (angular, _, config, $) {
       $scope.searchDashboards($scope.query.query);
     };
 
-    $scope.deleteDashboard = function(id, evt) {
+    $scope.deleteDashboard = function(dash, evt) {
       evt.stopPropagation();
-      $scope.emitAppEvent('delete-dashboard', { id: id });
+      $scope.appEvent('delete-dashboard', { id: dash.id, title: dash.title });
+      $scope.results.dashboards = _.without($scope.results.dashboards, dash);
     };
 
     $scope.addMetricToCurrentDashboard = function (metricId) {

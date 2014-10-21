@@ -14,10 +14,13 @@ define([
     function graphScenario(desc, func)  {
       describe(desc, function() {
         var ctx = {};
+
         ctx.setup = function (setupFunc) {
+
           beforeEach(module(function($provide) {
             $provide.value("timeSrv", new helpers.TimeSrvStub());
           }));
+
           beforeEach(inject(function($rootScope, $compile) {
             var scope = $rootScope.$new();
             var element = angular.element("<div style='width:500px' grafana-graph><div>");
@@ -27,8 +30,15 @@ define([
               legend: {},
               grid: {},
               y_formats: [],
-              seriesOverrides: []
+              seriesOverrides: [],
+              tooltip: {
+                shared: true
+              }
             };
+
+            scope.appEvent = sinon.spy();
+            scope.onAppEvent = sinon.spy();
+            scope.hiddenSeries = {};
             scope.dashboard = { timezone: 'browser' };
             scope.range = {
               from: new Date('2014-08-09 10:00:00'),
@@ -116,6 +126,20 @@ define([
       });
     });
 
+    graphScenario('should use timeStep for barWidth', function(ctx) {
+      ctx.setup(function(scope, data) {
+        scope.panel.bars = true;
+        data[0] = new TimeSeries({
+          datapoints: [[1,10],[2,20]],
+          info: { alias: 'series1', enable: true }
+        });
+      });
+
+      it('should set barWidth', function() {
+        expect(ctx.plotOptions.series.bars.barWidth).to.be(10000/1.5);
+      });
+    });
+
     graphScenario('series option overrides, fill & points', function(ctx) {
       ctx.setup(function(scope, data) {
         scope.panel.lines = true;
@@ -142,6 +166,18 @@ define([
       it('should move zindex 2 last', function() {
         expect(ctx.plotData[0].info.alias).to.be('series2');
         expect(ctx.plotData[1].info.alias).to.be('series1');
+      });
+    });
+
+    graphScenario('when series is hidden', function(ctx) {
+      ctx.setup(function(scope) {
+        scope.hiddenSeries = {'series2': true};
+      });
+
+      it('should remove datapoints and disable stack', function() {
+        expect(ctx.plotData[0].info.alias).to.be('series1');
+        expect(ctx.plotData[1].data.length).to.be(0);
+        expect(ctx.plotData[1].stack).to.be(false);
       });
     });
 

@@ -5,6 +5,13 @@
 @import "tables_lists.less";
 @import "search.less";
 @import "panel.less";
+@import "forms.less";
+
+.row-control-inner {
+  padding:0px;
+  margin:0px;
+  position:relative;
+}
 
 .hide-controls {
   padding: 0;
@@ -35,13 +42,30 @@
   }
 }
 
+.logo-icon {
+  width: 24px;
+  padding: 13px 11px 0 0;
+  display: block;
+  float: left;
+}
+
+.page-title {
+ padding: 15px 0;
+ display: block;
+ float: left;
+}
+
 .row-button {
   width: 24px;
 }
 
 .modal {
-  margin: 5%;
-  width: 90%;
+  max-width: 800px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  top: 200px;
 }
 
 .grafana-search-metric-actions {
@@ -87,11 +111,11 @@
 
 .panel-fullscreen {
   z-index: 100;
-  display: block !important;
+  display: block;
   position: fixed;
   left: 0px;
   right: 0px;
-  top: 54px;
+  top: 51px;
   height: 100%;
   padding: 0 10px;
   background: @grafanaPanelBackground;
@@ -101,13 +125,20 @@
   .panel-content {
     padding-bottom: 130px;
   }
+
+  .dropdown-menu {
+    margin-bottom: 70px;
+  }
 }
 
-.dashboard-fullscreen .main-view-container {
-  height: 0px;
-  width: 0px;
-  position: fixed;
-  right: -10000px;
+.dashboard-fullscreen {
+  .main-view-container {
+    overflow: hidden;
+    height: 0;
+    .row-control-inner {
+      display: none;
+    }
+  }
 }
 
 .histogram-chart {
@@ -423,6 +454,21 @@ select.grafana-target-segment-input {
   background-color: rgb(58, 57, 57);
   border-radius: 5px;
   z-index: 9999;
+  max-width: 800px;
+  max-height: 600px;
+  overflow: hidden;
+  line-height: 14px;
+}
+
+
+
+.grafana-tooltip hr {
+ padding: 2px;
+ color: #c8c8c8;
+ margin: 0px;
+ border-bottom:0px solid #c8c8c8;
+ /*height:0px;
+ background-color: rgb(58, 57, 57);*/
 }
 
 .tooltip.in {
@@ -507,4 +553,10 @@ select.grafana-target-segment-input {
 
 .grafana-tip {
   padding-left: 5px;
+}
+
+.shortcut-table {
+  td { padding: 3px; }
+  th:last-child { text-align: left; }
+  td:first-child { text-align: right; }
 }

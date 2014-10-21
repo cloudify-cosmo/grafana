@@ -13,6 +13,7 @@ function (angular, app, _) {
       title: "Row",
       height: "150px",
       collapse: false,
+      editable: true,
       panels: [],
     };
 
@@ -20,6 +21,11 @@ function (angular, app, _) {
 
     $scope.init = function() {
       $scope.reset_panel();
+    };
+
+    $scope.togglePanelMenu = function(posX) {
+      $scope.showPanelMenu = !$scope.showPanelMenu;
+      $scope.panelMenuPos = posX;
     };
 
     $scope.toggle_row = function(row) {
@@ -97,6 +103,7 @@ function (angular, app, _) {
       var _as = 12 - $scope.dashboard.rowSpan($scope.row);
 
       $scope.panel = {
+        title: 'no title [click here]',
         error   : false,
         span    : _as < defaultSpan && _as > 0 ? _as : defaultSpan,
         editable: true,
@@ -138,13 +145,18 @@ function (angular, app, _) {
 
   module.directive('panelDropZone', function() {
     return function(scope, element) {
-      scope.$watch('dashboard.$$panelDragging', function(newVal) {
-        if (newVal && scope.dashboard.rowSpan(scope.row) < 10) {
+      scope.$on("ANGULAR_DRAG_START", function() {
+        var dropZoneSpan = 12 - scope.dashboard.rowSpan(scope.row);
+
+        if (dropZoneSpan > 0) {
+          element.find('.panel-container').css('height', scope.row.height);
+          element[0].style.width = ((dropZoneSpan / 1.2) * 10) + '%';
           element.show();
         }
-        else {
-          element.hide();
-        }
+      });
+
+      scope.$on("ANGULAR_DRAG_END", function() {
+        element.hide();
       });
     };
   });

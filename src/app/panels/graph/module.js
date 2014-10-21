@@ -15,7 +15,9 @@ define([
   'jquery.flot.selection',
   'jquery.flot.time',
   'jquery.flot.stack',
-  'jquery.flot.stackpercent'
+  'jquery.flot.stackpercent',
+  'jquery.flot.fillbelow',
+  'jquery.flot.crosshair'
 ],
 function (angular, app, $, _, kbn, moment, TimeSeries) {
   'use strict';
@@ -149,10 +151,6 @@ function (angular, app, $, _, kbn, moment, TimeSeries) {
        * queries
        */
       percentage    : false,
-      /** @scratch /panels/histogram/3
-       * zerofill:: Improves the accuracy of line charts at a small performance cost.
-       */
-      zerofill      : true,
 
       nullPointMode : 'connected',
 
@@ -160,7 +158,7 @@ function (angular, app, $, _, kbn, moment, TimeSeries) {
 
       tooltip       : {
         value_type: 'cumulative',
-        query_as_alias: true
+        shared: false,
       },
 
       targets: [{}],
@@ -243,7 +241,7 @@ function (angular, app, $, _, kbn, moment, TimeSeries) {
 
       var seriesInfo = {
         alias: alias,
-        color:  color,
+        color: color,
       };
 
       $scope.legend.push(seriesInfo);
@@ -340,8 +338,8 @@ function (angular, app, $, _, kbn, moment, TimeSeries) {
       $scope.render();
     };
 
-    $scope.addSeriesOverride = function() {
-      $scope.panel.seriesOverrides.push({});
+    $scope.addSeriesOverride = function(override) {
+      $scope.panel.seriesOverrides.push(override || {});
     };
 
     $scope.removeSeriesOverride = function(override) {

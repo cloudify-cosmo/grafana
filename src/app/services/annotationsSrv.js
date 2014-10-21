@@ -13,7 +13,8 @@ define([
     var timezone;
 
     this.init = function() {
-      $rootScope.$on('refresh', this.clearCache);
+      $rootScope.onAppEvent('refresh', this.clearCache);
+      $rootScope.onAppEvent('setup-dashboard', this.clearCache);
     };
 
     this.clearCache = function() {
@@ -57,7 +58,8 @@ define([
 
     function errorHandler(err) {
       console.log('Annotation error: ', err);
-      alertSrv.set('Annotations','Could not fetch annotations','error');
+      var message = err.message || "Aannotation query failed";
+      alertSrv.set('Annotations error', message,'error');
     }
 
     function addAnnotation(options) {
