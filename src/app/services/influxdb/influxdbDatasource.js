@@ -61,7 +61,7 @@ function (angular, _, kbn, InfluxSeries, InfluxQueryBuilder) {
       });
     };
 
-    InfluxDatasource.prototype.annotationQuery = function(annotation, rangeUnparsed) {
+    InfluxDatasource.prototype.annotationQuery = function(annotation, filterSrv, rangeUnparsed) {
       var timeFilter = getTimeFilter({ range: rangeUnparsed });
       var query = annotation.query.replace('$timeFilter', timeFilter);
       query = templateSrv.replace(query);
