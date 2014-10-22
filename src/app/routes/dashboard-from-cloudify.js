@@ -69,7 +69,7 @@ function (angular, $, config, _, store) {
         loadDashboardNum = findDashboardById(result, subdashId);
       }
       $scope.$evalAsync(function () {
-        $scope.emitAppEvent('setup-dashboard', result[loadDashboardNum]);
+        $scope.initDashboard(result[loadDashboardNum], $scope);
       });
     }
   });
