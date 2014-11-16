@@ -61,6 +61,7 @@ a.text-success:hover { color: darken(@green, 10%); }
 
 	.brand {
 		padding: 0px 15px;
+        font-weight: normal;
 
         img {
           display: none;
@@ -85,6 +86,7 @@ a.text-success:hover { color: darken(@green, 10%); }
 	.nav li.dropdown.active > .dropdown-toggle,
 	.nav li.dropdown.open.active > .dropdown-toggle {
 		color: @navbarLinkColorActive;
+        background-color: transparent !important;
 
 		&:hover {
 			color: @grayLighter;
@@ -566,6 +568,7 @@ a.thumbnail {
 .panel-title {
   color: @panelTitleColor;
   font-size: @panelTitleFontSize;
+  font-weight: normal !important;
 }
 
 .panel-full-edit-tabs {
@@ -586,6 +589,9 @@ div.panel-extra-container {
   border-radius: 3px !important;
   &.dropdown-toggle {
     background-color: #4b6c8b !important;
+  }
+  &:hover {
+    background-color: #4b6c8b;
   }
 }
 
@@ -611,5 +617,36 @@ div.panel-extra-container {
   left:-12px !important;
   .row-tab {
     background-color: @blueVeryDark;
+  }
+}
+
+.timepicker-dropdown {
+  span.text-warning {
+    color: inherit !important;
+  }
+}
+
+.panel-menu {
+  background-color: @white !important;
+  border-radius: 5px;
+  border-color: #cadbec !important;
+  border-width: 2px !important;
+
+  .panel-menu-row {
+    border-color: #cadbec !important;
+    border-width: 2px !important;
+
+    .panel-menu-link {
+      border-color: #cadbec !important;
+      border-width: 2px !important;
+    }
+  }
+}
+
+.dashboard-editor-body {
+  .editor-row {
+    .btn-group {
+      display: none;
+    }
   }
 }
