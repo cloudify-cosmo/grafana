@@ -12,3 +12,6 @@ src/css/*.min.css
 *.sublime-workspace
 *.swp
 .idea/
+
+# QuickBuild
+.qbcache/
