@@ -68,9 +68,10 @@ function (angular, $, config, _, store) {
       if(subdashId) {
         loadDashboardNum = findDashboardById(result, subdashId);
       }
-      $scope.$evalAsync(function () {
-        $scope.initDashboard(result[loadDashboardNum], $scope);
-      });
+
+      setTimeout(function() {
+          $scope.initDashboard(result[loadDashboardNum], $scope);
+      }, 1);
     }
   });
 
