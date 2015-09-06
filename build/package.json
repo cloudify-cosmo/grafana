@@ -1,0 +1,15 @@
+{
+    "name": "cloudify-grafana-build",
+    "version": "0.0.0",
+    "scripts": {
+        "install_prepreq" : "npm install -g bower grunt-cli phantomjs && npm cache clean",
+        "build_linux": "rm -rf node_modules && rm -rf app/bower_components && npm cache clean && bower cache clean &&  npm install && bower install && grunt  clean buildArtifacts analyze $FORCE $NO_COLOR",
+        "build_and_publish": "npm run build_linux && grunt uploadArtifacts $NO_COLOR",
+        "clean_all" : "rm -rf app/bower_components && rm -rf node_modules && bower cache clean && npm cache clean && bower install && npm install"
+    },
+    "devDependencies": {
+        "grunt": "^0.4.5",
+        "grunt-shell": "^1.1.2",
+        "load-grunt-tasks": "^3.2.0"
+    }
+}
